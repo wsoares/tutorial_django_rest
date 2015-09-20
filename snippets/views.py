@@ -62,8 +62,8 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from snippets.models import Snippet
-from snippets.serializers import SnippetSerializer
+from .models import Snippet
+from .serializers import SnippetSerializer
 
 class JSONResponse(HttpResponse):
 	"""
@@ -75,23 +75,23 @@ class JSONResponse(HttpResponse):
 		super(JSONResponse, self).__init__(content, **kwargs)
 
 
-	# @csrf_exempt
-	# def snippet_list(request):
-	# 	"""
-	# 	List all code snippets, or create a new snippet.
-	# 	"""
-	# 	if request.method == 'GET':
-	# 		snippets = Snippet.objects.all()
-	# 		serializer = SnippetSerializer(snippets, many=True)
-	# 		return JSONResponse(serializer.data)
+	@csrf_exempt
+	def snippet_list(request):
+		"""	List all code snippets, or create a new snippet."""
 
-	# 	elif request.method == 'POST':
-	# 		data = JSONParser().parse(request)
-	# 		serializer = SnippetSerializer(data=data)
-	# 		if serializer.is_valid():
-	# 			serializer.save()
-	# 			return JSONResponse(serializer.data, status=201)
-	# 		return JSONResponse(serializer.errors, status=400)
+		if request.method == 'GET':
+			snippets = Snippet.objects.all()
+			serializer = SnippetSerializer(snippets, many=True)
+			# return JSONResponse(serializer.data)
+
+		elif request.method == 'POST':
+			data = JSONParser().parse(request)
+			serializer = SnippetSerializer(data=data)
+			if serializer.is_valid():
+				serializer.save()
+				# return JSONResponse(serializer.data, status=201)
+			# return JSONResponse(serializer.errors, status=400)
+		return HttpResponse("Hello, world. You're at the polls index.")
 
 	@csrf_exempt
 	def snippet_detail(request, pk):
@@ -118,4 +118,3 @@ class JSONResponse(HttpResponse):
 		elif request.method == 'DELETE':
 			snippet.delete()
 			return HttpResponse(status=204)
-
